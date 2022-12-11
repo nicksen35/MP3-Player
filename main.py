@@ -14,7 +14,7 @@ print("Hello world")
 musicplayer = tkinter.Tk()
 musicplayer.title("Bduck Music Player")
 musicplayer.geometry("1920x1080")
-musicplayer.configure(bg="black")
+musicplayer.configure()
 mixer.init()
 pygame.init()
 isRunning = True
@@ -44,8 +44,8 @@ def PlayTime():
         #slider moved
         sliderposition = int(songlength)
         songslider.config(to=sliderposition, value=int(songslider.get()))
-        sliderlabel.config(text=f'Slider{int(songslider.get())} and Song Pos {int(currenttime)}')
         convertedcurrentsongtime = time.strftime('%M:%S', time.gmtime(int(songslider.get())))
+        sliderlabel.config(text=f'Time Elapsed: {convertedcurrentsongtime} of {convertedcurrentsonglength}')
         statusbar.config(text=f'Time Elapsed: {convertedcurrentsongtime} of {convertedcurrentsonglength}')
         nexttime = int(songslider.get()) + 1
         songslider.config(value=nexttime)
@@ -128,6 +128,13 @@ def Play():
     mixer.music.load(playlist.get(ACTIVE))
     mixer.music.play(loops=0)
     PlayTime()
+def Volume(x):
+    mixer.music.set_volume(volumeslider.get())
+    roundedvolume = round(volumeslider.get(), 2)
+    roundedvolume = int(roundedvolume * 100)
+    volumesliderlabel.config(text=roundedvolume)
+    print(roundedvolume)
+
 var = tkinter.StringVar()
 songtitle = tkinter.Label(musicplayer, font="Arial", textvariable=var)
 
@@ -170,8 +177,15 @@ lastsongbutton.place(x=510, y=500)
 statusbar = Label(musicplayer, text='', borderwidth=0, relief=GROOVE)
 statusbar.place(relx=1.0, rely=1.0, anchor='se')
 
+baseframe = Frame(musicplayer)
+
 songslider = ttk.Scale(musicplayer, from_=0, to=100, orient=HORIZONTAL, value=0, length=400, command=SlideSong, )
 songslider.place(relx=0.5, rely=0.94, anchor='s')
+
+volumeslider = ttk.Scale(musicplayer, from_=0, to=1, orient=VERTICAL, value=1, length=400, command=Volume,)
+volumeslider.place(relx=0.8, rely=0.94, anchor='s')
+volumesliderlabel = Label(text="100")
+volumesliderlabel.place(relx=0.8, rely=0.96, anchor='s')
 
 sliderlabel = Label(text="0")
 sliderlabel.place(relx=0.5, rely=0.96, anchor="s")
