@@ -26,7 +26,7 @@ pygame.init()
 #Initialize Mixer and Pygame
 
 
-playlist = tkinter.Listbox(musicplayer, font="Arial 12 bold", bg="black", fg="yellow", width=40, height=30)
+playlist = tkinter.Listbox(musicplayer, font="Arial 12 bold", bg="black", fg="yellow", width=20, height=30)
 #Make our Playlist
 
 
@@ -89,19 +89,15 @@ def SlideSong(x):
     mixer.music.play(loops=0, start=int(songslider.get()))
     #Get the song then when it plays, start the song slider
 def AddSongs():
-    #Adding the songs
     directory = filedialog.askdirectory()
-    if directory:
-        songlist = os.listdir(directory)
-        #get all the songs in the directory
-        playlist.grid()
-        #Make a grid for your playlist
+    path = filedialog.askdirectory()
+    if path:
+        os.chdir(directory)
+        songlist = os.listdir(path)
+        playlist.grid(columnspan=5)
         for songs in songlist:
-            #For every song in the songlist
             if songs.endswith(".mp3"):
-                #And if the song ends with .mp3
                 playlist.insert(END, songs)
-                #Insert the song to the end of the list
 global stopped
 stopped = False
 #Make a global variable called stopped
@@ -156,36 +152,56 @@ def NextSong():
 def PreviousSong():
     statusbar.config(text='')
     songslider.config(value=0)
+    #Once the button has been clicked, make the slider and its value 0
     lastsong = playlist.curselection()
+    #Get the current selection of the song
     print(playlist.curselection())
+    #Print to test
     lastsong = lastsong[0] - 1
+    #Last song's 1st value or the number would be minused by 1 or reversed
     song = playlist.get(lastsong)
+    #Get the last song as the song
     print(song)
     print(lastsong)
     pygame.mixer.music.load(song)
+    #Load the song
     pygame.mixer.music.play(loops=0)
     playlist.selection_clear(0, END)
     playlist.activate(lastsong)
     playlist.select_set(lastsong)
+    #Clear the selection then make sure the last song's number
+    #is what is active so that it starts at another number than 0 next time you get the current selection
 def Play():
     global stopped
+    #Global stopped variable
     stopped = False
-    global played
-    played = True
     musicname = playlist.get(ACTIVE)
+    #Music name would be the the active song when play is clicked
     print(musicname[0:-4])
     mixer.music.load(playlist.get(ACTIVE))
+    #Load the active song
     mixer.music.play(loops=0)
+    #Play it with 0 loops
     PlayTime()
+    #Run playtime function to track playtime
+    songtitle.config(text=f'Current Song Playing: \n{musicname}')
 def Volume(x):
     mixer.music.set_volume(volumeslider.get())
+    #The volume would be set to wherever the volume slider is
     roundedvolume = round(volumeslider.get(), 2)
+    #Round the volume to two decimal places
     roundedvolume = int(roundedvolume * 100)
+    #Times it by 100 to get a 1-100 scale
     volumesliderlabel.config(text=roundedvolume)
+    #Adjust the slider label to the rounded volume
     print(roundedvolume)
+    #Outputs volume
 
-var = tkinter.StringVar()
-songtitle = tkinter.Label(musicplayer, font="Arial", textvariable=var)
+
+
+songtitle = tkinter.Label(musicplayer, font="Helvetica, 20", text='Current Song Playing: ', )
+
+songtitle.place(anchor='center', relx=0.5, rely=0.5)
 
 playimage = Image.open('playbutton.png')
 playimage = playimage.resize((100, 100))
@@ -232,10 +248,12 @@ songslider = ttk.Scale(musicplayer, from_=0, to=100, orient=HORIZONTAL, value=0,
 songslider.place(relx=0.5, rely=0.9, anchor='s')
 
 volumeslider = ttk.Scale(musicplayer, from_=0, to=1, orient=VERTICAL, value=1, length=400, command=Volume)
-volumeslider.place(relx=0.8, rely=0.86, anchor='s')
+volumeslider.place(relx=0.9, rely=0.86, anchor='s')
 volumesliderlabel = Label(text="100")
-volumesliderlabel.place(relx=0.8, rely=0.9, anchor='s')
+volumesliderlabel.place(relx=0.9, rely=0.9, anchor='s')
 
 songsliderlabel = Label(text="Time Elapsed: 0:0 of Song Length: 0:0 ")
 songsliderlabel.place(relx=0.5, rely=0.92, anchor="s")
+
+
 musicplayer.mainloop()
