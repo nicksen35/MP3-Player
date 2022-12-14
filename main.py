@@ -60,6 +60,10 @@ def AddSongs():
                 #Insert the song at the position then add the position by 1
 def Play():
     try:
+        global paused
+        if paused == True:
+            mixer.music.unpause()
+            paused = False
         statusbar.config(text='')
         songslider.config(value=0)
         musicname = playlist.get(ACTIVE)
@@ -189,9 +193,13 @@ def Pause(ispaused):
 
 
 def NextSong(hasbeenqueued):
+    global paused
     global songqueued
     songqueued = hasbeenqueued
     if songqueued:
+        if paused == True:
+            mixer.music.unpause()
+            paused = False
         songqueued = False
         #If there is a song queued
         statusbar.config(text='')
@@ -214,6 +222,9 @@ def NextSong(hasbeenqueued):
 
     else:
         try:
+            if paused == True:
+                mixer.music.unpause()
+                paused = False
             statusbar.config(text='')
             songslider.config(value=0)
             #Once a next song has been played, reset everything
@@ -238,6 +249,10 @@ def NextSong(hasbeenqueued):
             PreviousSong()
 def PreviousSong():
     try:
+        global paused
+        if paused == True:
+            mixer.music.unpause()
+            paused = False
         #Try to run this
         statusbar.config(text='')
         songslider.config(value=0)
