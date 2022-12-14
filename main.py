@@ -55,6 +55,7 @@ def AddSongs():
                 #If the song ends with mp3
                 playlist.insert(position, songs)
                 position = position + 1
+                playlist.select_clear(0, END)
                 playlist.select_set(0)
                 #Insert the song at the position then add the position by 1
 def Play():
@@ -81,6 +82,9 @@ def shuffle():
             randomposition = random.choice(range(0, position))
             #Randomly generate a value from the range 0 to the amount of songs
             playlist.insert(randomposition, songs)
+        playlist.select_clear(0, END)
+        playlist.activate(0)
+        playlist.select_set(0)
             #Insert the new shuffled songs
     except:
         pass
@@ -112,8 +116,8 @@ def PlayTime():
             statusbar.config(text=f'Time Elapsed: {convertedcurrentsongtime} of {convertedcurrentsonglength}')
             songsliderlabel.config(text=f'Time Elapsed: {convertedcurrentsongtime} of {convertedcurrentsonglength}')
             #Set the status bar to the current time and the song length
-            if currenttime == songlength:
-                NextSong()
+            if currenttime >= songlength:
+                NextSong(hasbeenqueued=False)
                 #If the time has equalled the songlength, then go to the next song
         elif paused:
             pass
@@ -130,17 +134,17 @@ def PlayTime():
             adjustslidervalue = int(songslider.get()) + 1
             #Increase the songslider by 1
             songslider.config(value=adjustslidervalue)
-            if songslider.get() == int(songlength):
-                NextSong()
+            if songslider.get() >= int(songlength):
+                NextSong(hasbeenqueued=False)
         #Keep increasing the value by 1
         statusbar.after(1000, PlayTime)
     except:
         pass
     #After 1000 miliseconds, update the playtime by 1
-    global songqueued
-    #Global song queued
-    songqueued = False
-    #Make the variable false
+global songqueued
+#Global song queued
+songqueued = False
+#Make the variable false
 
 
 
@@ -192,11 +196,11 @@ def NextSong(hasbeenqueued):
         #If there is a song queued
         statusbar.config(text='')
         songslider.config(value=0)
+        PlayTime()
         #Reset the slider values to 0
         mixer.music.load(queuedsong)
         #Load the queue song
         mixer.music.play(loops=0)
-        PlayTime()
         #Play the queued song
         songtitle.config(text=f'Current Song:   \n{queuedsong}')
         #Config the text to display the current song
@@ -205,6 +209,7 @@ def NextSong(hasbeenqueued):
         playlist.selection_clear(0, END)
         playlist.activate(song)
         playlist.select_set(song)
+
         #Clear the song selection activate the new song and then select the song
 
     else:
@@ -255,7 +260,7 @@ def PreviousSong():
         #is what is active so that it starts at another number than 0 next time you get the current selection
     except:
         #If there is an erorr, play next song
-        lambda:NextSong(songqueued)
+        NextSong(hasbeenqueued=False)
 
 def Volume(x):
     mixer.music.set_volume(volumeslider.get())
