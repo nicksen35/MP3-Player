@@ -165,10 +165,20 @@ def QueueSong():
 
 def SlideSong(x):
     try:
+        global paused
+        if paused:
         #Slider manipulation
-        song = playlist.get(ACTIVE)
-        mixer.music.load(song)
-        mixer.music.play(loops=0, start=int(songslider.get()))
+            paused = False
+            song = playlist.get(ACTIVE)
+            mixer.music.load(song)
+            mixer.music.play(loops=0, start=int(songslider.get()))
+        else:
+            song = playlist.get(ACTIVE)
+            mixer.music.load(song)
+            mixer.music.play(loops=0, start=int(songslider.get()))
+
+
+
         #Get the song then when it plays, start the song slider
     except:
         pass
