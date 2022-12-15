@@ -58,8 +58,12 @@ def AddSongs():
                 playlist.select_clear(0, END)
                 playlist.select_set(0)
                 #Insert the song at the position then add the position by 1
+global played
+played = False
 def Play():
     try:
+        global played
+        played = True
         global paused
         if paused == True:
             mixer.music.unpause()
@@ -165,17 +169,15 @@ def QueueSong():
 
 def SlideSong(x):
     try:
-        global paused
         if paused:
+            statusbar.config(text='')
+            songslider.config(value=int(songslider.get()))
+            mixer.music.set_pos(int(songslider.get()))
         #Slider manipulation
-            paused = False
-            song = playlist.get(ACTIVE)
-            mixer.music.load(song)
-            mixer.music.play(loops=0, start=int(songslider.get()))
         else:
-            song = playlist.get(ACTIVE)
-            mixer.music.load(song)
-            mixer.music.play(loops=0, start=int(songslider.get()))
+            statusbar.config(text='')
+            songslider.config(value=int(songslider.get()))
+            mixer.music.set_pos(int(songslider.get()))
 
 
 
@@ -203,18 +205,18 @@ def Pause(ispaused):
 
 
 def NextSong(hasbeenqueued):
+
     global paused
     global songqueued
     songqueued = hasbeenqueued
     if songqueued:
+        statusbar.config(text='')
+        songslider.config(value=0)
         if paused == True:
             mixer.music.unpause()
             paused = False
         songqueued = False
         #If there is a song queued
-        statusbar.config(text='')
-        songslider.config(value=0)
-        PlayTime()
         #Reset the slider values to 0
         mixer.music.load(queuedsong)
         #Load the queue song
@@ -229,6 +231,8 @@ def NextSong(hasbeenqueued):
         playlist.select_set(song)
 
         #Clear the song selection activate the new song and then select the song
+    elif not played:
+        pass
 
     else:
         try:
