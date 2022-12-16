@@ -111,10 +111,11 @@ def PlayTime():
         currenttime = round(mixer.music.get_pos() / 1000)
     #Round the time of the music so it appears as an integer and divide by 1000 to display in seconds
         currenttime = currenttime + 1
+        adjustslidervalue = int(songslider.get()) + 1
     #Pygame error: adding 1 to fix the current time glitch
         convertedcurrentsonglength = time.strftime('%M:%S', time.gmtime(songlength))
     #Convert the songlength into minutes and seconds
-        if int(songslider.get()) == int(currenttime):
+        if int(songslider.get()) <= int(currenttime):
             #slider hasnt moved
             sliderposition = int(songlength)
             #the slider position is where the songlength is
@@ -131,6 +132,9 @@ def PlayTime():
             pass
         #if its paused, just pass or do nothing
         else:
+
+            # Increase the songslider by 1
+            songslider.config(value=adjustslidervalue)
             songslider.config(to=int(songlength), value=int(songslider.get()))
             #if the slider has been moved set the slider's max position to the song length and the value or position of the slider should be where it was moved to
             convertedcurrentsongtime = time.strftime('%M:%S', time.gmtime(int(songslider.get())))
@@ -139,15 +143,14 @@ def PlayTime():
             #Change the song slider label
             statusbar.config(text=f'Time Elapsed: {convertedcurrentsongtime} of {convertedcurrentsonglength}')
             #set the status bar
-            adjustslidervalue = int(songslider.get()) + 1
-            #Increase the songslider by 1
-            songslider.config(value=adjustslidervalue)
+
             if songslider.get() >= int(songlength):
                 NextSong(hasbeenqueued=False)
         #Keep increasing the value by 1
-        statusbar.after(1000, PlayTime)
     except:
         pass
+    statusbar.after(1000, PlayTime)
+
     #After 1000 miliseconds, update the playtime by 1
 global songqueued
 #Global song queued
